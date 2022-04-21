@@ -10,7 +10,7 @@ namespace DoctorAppointment.Services.Appointments.Contracts
     public interface AppointmentRepository
     {
         void Add(Appointment appointment);
-        List<int> GetPossibelity(DateTime dateTime, int doctorId, int patientId);
+        PossibelityDto GetPossibelity(DateTime dateTime, int doctorId, int patientId);
         List<GetAllAppointmentDto> GetAll();
         Appointment GetById(int id);
         void Delete(Appointment appointment);

@@ -44,7 +44,7 @@ namespace DoctorAppointment.Persistence.EF.Appointments
                 FirstOrDefault(x => x.Id == id);    
         }
 
-        public List<int> GetPossibelity(DateTime dateTime, int doctorId, int patientId)
+        public PossibelityDto GetPossibelity(DateTime dateTime, int doctorId, int patientId)
         {
             var VisitsCount = _Appointment.Where(x => x.DoctorId == doctorId &&
              x.Date == dateTime).Count();
@@ -52,12 +52,13 @@ namespace DoctorAppointment.Persistence.EF.Appointments
             var RepeatCount= _Appointment.Where(x => x.DoctorId == doctorId &&
              x.Date == dateTime && x.PatientId == patientId).Count();
 
-            List<int> result = new List<int>();
-            result.Add(VisitsCount);
-            result.Add(RepeatCount);
+            PossibelityDto possibelityDto = new PossibelityDto
+            {
+                VisitCount = VisitsCount,
+                ReapetCount = RepeatCount,
+            };
 
-            return result;
-            
+            return possibelityDto;    
         }
     }
 }

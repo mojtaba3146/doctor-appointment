@@ -27,16 +27,12 @@ namespace DoctorAppointment.Services.Appointments
         public void Add(AddApointmentDto dto)
         {
             var appointment = new Appointment();
-            int VisitsCount, RepeatCount;
-            List<int> possibelety = new List<int>();
+            PossibelityDto possibelity = new PossibelityDto();
 
-            possibelety = _repository.
+            possibelity = _repository.
                GetPossibelity(dto.Date, dto.DoctorId, dto.PatientId);
 
-            VisitsCount = possibelety[0];
-            RepeatCount = possibelety[1];
-
-            if (VisitsCount <= 5 && RepeatCount == 0)
+            if (possibelity.VisitCount <= 5 && possibelity.ReapetCount == 0)
             {
                 appointment.Date = dto.Date;
                 appointment.DoctorId = dto.DoctorId;
@@ -72,21 +68,17 @@ namespace DoctorAppointment.Services.Appointments
         public void Update(int id, UpdateAppointmentDto dto)
         {
             var appointment = _repository.GetById(id);
-            int VisitsCount, RepeatCount;
-            List<int> possibelety = new List<int>();
+            PossibelityDto possibelity = new PossibelityDto();
 
             if (appointment == null)
             {
                 throw new AppointmentDoesNotExsitException();
             }
 
-            possibelety = _repository.
+            possibelity = _repository.
                GetPossibelity(dto.Date, dto.DoctorId, dto.PatientId);
 
-            VisitsCount = possibelety[0];
-            RepeatCount = possibelety[1];
-
-            if (VisitsCount <= 5 && RepeatCount == 0)
+            if (possibelity.VisitCount <= 5 && possibelity.ReapetCount == 0)
             {
                 appointment.Date = dto.Date;
                 appointment.DoctorId = dto.DoctorId;
