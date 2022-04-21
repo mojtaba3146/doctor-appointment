@@ -1,4 +1,5 @@
-﻿using DoctorAppointment.Services.Doctors.Contracts;
+﻿using DoctorAppointment.Infrastructure.Application;
+using DoctorAppointment.Services.Doctors.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DoctorAppointment.Services.Patients.Contracts
 {
-    public interface PatientService
+    public interface PatientService : Service
     {
         void Add(AddPatientDto dto);
         List<GetAllPatientsDto> GetAllPatients();

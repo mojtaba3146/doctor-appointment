@@ -1,3 +1,5 @@
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using DoctorAppointment.Infrastructure.Application;
 using DoctorAppointment.Persistence.EF;
 using DoctorAppointment.Persistence.EF.Appointments;
@@ -36,26 +38,40 @@ namespace DoctorAppointment.RestAPI
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
 
             services.AddControllers();
 
-            services.AddDbContext<ApplicationDbContext>
-                (_ => _.UseSqlServer(Configuration["ConnectionString"]));
-
-            services.AddScoped<DoctorRepository, EFDoctorRepository>();
-            services.AddScoped<UnitOfWork, EFUnitOfWork>();
-            services.AddScoped<DoctorService, DoctorAppService>();
-            services.AddScoped<PatientRepository, EFPatientRepository>();
-            services.AddScoped<PatientService, PatientAppService>();
-            services.AddScoped<AppointmentRepository, EFAppointmentRepository>();
-            services.AddScoped<AppointmentService, AppointmentAppService>();
-            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "DoctorAppointment.RestAPI", Version = "v1" });
             });
+
+            services.AddDbContext<ApplicationDbContext>
+                (_ => _.UseSqlServer(Configuration["ConnectionString"]));
+
+            var builder = new ContainerBuilder();
+
+            builder.RegisterAssemblyTypes(typeof(AppointmentAppService).Assembly)
+                .AssignableTo<Service>()
+                .AsImplementedInterfaces()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<EFUnitOfWork>()
+                     .As<UnitOfWork>()
+                     .InstancePerLifetimeScope();
+
+            builder.RegisterAssemblyTypes(typeof(EFAppointmentRepository).Assembly)
+                     .AssignableTo<Repository>()
+                     .AsImplementedInterfaces()
+                     .InstancePerLifetimeScope();
+
+            builder.Populate(services);
+
+            var container = builder.Build();
+
+            return new AutofacServiceProvider(container);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
